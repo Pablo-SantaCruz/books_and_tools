@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: libros
+      POSTGRES_USER: usuario
+      POSTGRES_PASSWORD: contraseña
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - booksnet
+
+  isbn-ocr:
+    build: ./isbn-ocr
+    ports:
+      - "5001:5000"
+    networks:
+      - booksnet
+
+  metadata-api:
+    build: ./metadata-api
+    ports:
+      - "5002:5000"
+    networks:
+      - booksnet
+
+  backend:
+    build: ./backend
+    ports:
+      - "8001:5000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=libros
+      - DB_USER=usuario
+      - DB_PASSWORD=contraseña
+    depends_on:
+      - db
+      - isbn-ocr
+      - metadata-api
+    networks:
+      - booksnet
+
+  # frontend:
+  #   build: ./frontend
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - booksnet
+
+networks:
+  booksnet:
+
+volumes:
+  db_data:
