@@ -1,3 +1,4 @@
+# Fuerza rebuild
 FROM python:3.11-slim
 
 # Instala dependencias del sistema, incluyendo libgl1
